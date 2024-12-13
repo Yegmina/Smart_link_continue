@@ -1,7 +1,12 @@
-from flask import Flask, request, render_template, send_from_directory, jsonify
-#from utils.translation import translate_text
 import os
 # Create the Flask app instance
+
+from flask import Flask, request, jsonify, render_template, redirect, url_for
+from flask_cors import CORS
+
+from utils.functions import *  # Import all functions from functions.py
+
+
 app = Flask(__name__)
 
 """basic functions"""
