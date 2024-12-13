@@ -5,7 +5,7 @@ html, body {
     width: 100%;
     height: 100%;
     font-family: Arial, sans-serif;
-    overflow: hidden;
+    overflow: auto; /* Allow scrolling */
 }
 /* Background Video Styling */
 #backgroundVideo {
@@ -254,4 +254,14 @@ footer {
     left: 0;
     top: 0;
     border-radius: 10px;
+}
+
+
+/* Results Section Styling */
+#results {
+    color: white; /* Ensures text is white */
+    background: rgba(0, 0, 0, 0.7); /* Optional: adds a translucent background */
+    padding: 10px;
+    border-radius: 8px;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.4); /* Subtle glow effect */
 }
