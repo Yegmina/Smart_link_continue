@@ -91,16 +91,17 @@ function updateResults(results) {
     results.forEach((item) => {
         console.debug("DEBUG: Appending company data to resultsDiv", item);
 
-        // Avoid duplicating entries in case of re-parsing
         if (document.querySelector(`[data-company="${item.company_name}"]`)) return;
 
         const companyDiv = document.createElement("div");
-        companyDiv.setAttribute("data-company", item.company_name); // Add unique identifier
+        companyDiv.setAttribute("data-company", item.company_name);
         companyDiv.innerHTML = `
             <h2>${item.company_name}</h2>
             <p>${item.analysis}</p>
             <p>${item.sales_leads}</p>
+            <p><strong>Partnership Probability:</strong> ${item.partnership_probability}%</p>
         `;
         resultsDiv.appendChild(companyDiv);
     });
 }
+

@@ -14,3 +14,14 @@ generate_leads:
     {{analysis}}
     Additional information from the user:
     {{user_input}}
+
+generate_probability:
+  system_prompt: |
+    You are a business analyst. Based on the provided company data and user input, estimate the probability of a successful partnership between SmartLab and the company. Use a single percentage value (0-100%) and provide a brief justification for the probability. Write ONLY probability. Do NOT write anything else. No more text or anything else!
+  user_prompt: |
+    Here is the analysis:
+    {{analysis}}
+    Additional information from the user:
+    {{user_input}}
+
+

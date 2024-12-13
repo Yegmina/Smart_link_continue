@@ -63,48 +63,67 @@ def get_scraped_companies():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
-
 @app.route("/process", methods=["POST"])
 def process_data():
     try:
-        # Get the data from the request body
+        # Parse the incoming request data
         request_data = request.json
-        user_input = request_data.get("userInput", "").strip()  # Get 'userInput' from the request
+        user_input = request_data.get("userInput", "").strip()
 
-        # Load scraped company data and prompts
+        # Load prompts and initialize the AI model
+        app.logger.debug("DEBUG: Loading prompts and initializing AI model.")
         prompts = load_prompts()
         gemini_model = GeminiModel(model_name="gemini-1.5-flash")
 
-        def generate_responses():
-            yield '{"status": "success", "results": ['  # Initial JSON structure
-            first = True
-            for company_name, company_info in request_data.get("companies", {}).items():
-                if not first:
-                    yield ','
-                first = False
+        results = []
+        total_companies = len(request_data.get("companies", {}))
+        app.logger.debug(f"DEBUG: Total companies to process: {total_companies}")
 
-                time.sleep(3)
+        # Function to process and generate responses for each company
+        def process_companies():
+            for index, (company_name, company_info) in enumerate(request_data.get("companies", {}).items(), start=1):
+                try:
+                    app.logger.debug(f"DEBUG: Processing company {index}/{total_companies}: {company_name}")
 
-                # Combine user input with scraped data
-                scraped_data = f"""
-                User Input: {user_input}
-                Company Name: {company_name}
-                Industry: {company_info.get('mainBusinessLine', 'N/A')}
-                Website: {company_info.get('url', 'N/A')}
-                """
-                analysis, sales_leads = process_company(scraped_data, gemini_model, prompts)
-                result = {
-                    "company_name": company_name,
-                    "analysis": analysis,
-                    "sales_leads": sales_leads
-                }
-                yield json.dumps(result)
-            yield ']}'
+                    # Prepare scraped data with user input
+                    scraped_data = f"""
+                    User Input: {user_input}
+                    Company Name: {company_name}
+                    Industry: {company_info.get('mainBusinessLine', 'N/A')}
+                    Website: {company_info.get('url', 'N/A')}
+                    """
+                    app.logger.debug(f"DEBUG: Prepared scraped data for {company_name}.")
 
-        return Response(stream_with_context(generate_responses()), content_type="application/x-ndjson")
+                    # Call process_company to get results
+                    analysis, sales_leads, probability_html, probability_value = process_company(scraped_data, gemini_model, prompts)
+                    app.logger.debug(f"DEBUG: Successfully processed {company_name}.")
+
+                    # Append results to the list
+                    results.append({
+                        "company_name": company_name,
+                        "analysis": analysis,
+                        "sales_leads": sales_leads,
+                        "partnership_probability": probability_value,
+                        "probability_html": probability_html,  # Include HTML for display
+                    })
+                except Exception as company_error:
+                    app.logger.error(f"Error processing company {company_name}: {company_error}")
+                    continue  # Skip to the next company in case of an error
+
+        # Process the companies and sort the results by partnership probability
+        app.logger.debug("DEBUG: Starting company processing.")
+        process_companies()
+        app.logger.debug("DEBUG: Finished processing all companies.")
+
+        sorted_results = sorted(results, key=lambda x: x["partnership_probability"], reverse=True)
+        app.logger.debug("DEBUG: Results sorted by partnership probability.")
+
+        # Return the sorted results
+        return jsonify({"status": "success", "results": sorted_results})
     except Exception as e:
         app.logger.error(f"Error in /process: {e}")
         return jsonify({"status": "error", "message": str(e)})
+
 
 
 @app.errorhandler(404)
