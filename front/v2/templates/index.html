@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+
+    <title>Translation App Example</title>
+    <!-- Link to the main CSS file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/main.css') }}" />
+    <!-- File needed, have some basic functions used in other .js files -->
+    <script type="module" src="{{ url_for('static', filename='scripts/basic.js') }}"></script>
+    <!-- Link to the JavaScript file for changing language of whole WebPage -->
+    <script type="module" src="{{ url_for('static', filename='scripts/language_switcher.js') }}" defer></script>
+    <!-- Link to the JavaScript file for translation En to Fi -->
+    <script type="module" src="{{ url_for('static', filename='scripts/main.js') }}" defer></script>
+    <!-- Link to the JaveScript file, used for animations, video appearing etc -->
+    <script type="module" src="{{ url_for('static', filename='scripts/anim.js') }}" defer></script>
+
+
+</head>
+<body>
+    <video autoplay muted loop id="backgroundVideo">
+        <source src="{{ url_for('static', filename='videos/background.mp4') }}" type="video/mp4">
+        Your browser does not support the video tag.
+    </video>
+    <header>
+        <h1 data-i18n="title"> Smart-link project</h1>
+        <nav>
+            <label for="languageSelect" data-i18n="selectLanguage">Select Language of WebPage:</label> <!-- language of ALL basic content in webpage-->
+            <select id="languageSelect">
+                <option value="en" data-i18n="english">English</option>
+                <option value="fi" data-i18n="finnish">Finnish</option>
+            </select>
+        </nav>
+    </header>
+
+    <main>
+        <section>
+            <label for="textInput" data-i18n="enterText">Enter text to add additional info about company:</label> <br>
+            <textarea id="textInput" rows="8" placeholder="Enter text here..." data-i18n-placeholder="placeholderText">SmartLab has a model of a typical Finnish two-room apartment built inside of it, that is designed for the development and testing of technology that serves living, which also serves as a testing ground for innovation projects and theses.
+    SmartLab is a joint project of Skanska , ABB and Metropolia.
+    Technologies are tested and developed on the SmartLab platform, which can be used to develop user-friendly smart-house solutions.
+    The solutions are meant to be suitable for different stages of the life cycle. The broader goal is to utilize the results in the design of new generation systems and apartments.
+    SmartLab has developing VR capabilities that utilize digital-twin technology.
+    The model of a typical Finnish two-room apartment in the SmartLab has incorporated various HVAC and electrical systems.
+    In the SmartLab companies, students and independent researchers can test their ideas and solutions.
+            </textarea>
+        </section>
+        <button id="translateButton" data-i18n="translateButton" class="glow-on-hover">Process</button>
+        <p id="loadingMessage" class="loading" style="display: none;" data-i18n="loadingMessage">Processing, please wait...</p>
+        <p id="notification" class="comments"></p>
+
+        <section id="outputSection" style="display: none;">
+            <h2 data-i18n="outputTitle">Result:</h2>
+            <p id="translatedText"></p>
+
+        </section>
+    </main>
+
+
+    <footer>
+        <p data-i18n="footerText">Made by Tereshchenko Yehor</p>
+    </footer>
+</body>
+</html>
