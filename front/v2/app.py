@@ -63,23 +63,31 @@ def get_scraped_companies():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
+
 @app.route("/process", methods=["POST"])
 def process_data():
     try:
-        data = request.json
+        # Get the data from the request body
+        request_data = request.json
+        user_input = request_data.get("userInput", "").strip()  # Get 'userInput' from the request
+
+        # Load scraped company data and prompts
         prompts = load_prompts()
         gemini_model = GeminiModel(model_name="gemini-1.5-flash")
 
         def generate_responses():
             yield '{"status": "success", "results": ['  # Initial JSON structure
             first = True
-            for company_name, company_info in data.items():
+            for company_name, company_info in request_data.get("companies", {}).items():
                 if not first:
                     yield ','
                 first = False
 
                 time.sleep(3)
+
+                # Combine user input with scraped data
                 scraped_data = f"""
+                User Input: {user_input}
                 Company Name: {company_name}
                 Industry: {company_info.get('mainBusinessLine', 'N/A')}
                 Website: {company_info.get('url', 'N/A')}
@@ -97,10 +105,6 @@ def process_data():
     except Exception as e:
         app.logger.error(f"Error in /process: {e}")
         return jsonify({"status": "error", "message": str(e)})
-
-
-
-
 
 
 @app.errorhandler(404)

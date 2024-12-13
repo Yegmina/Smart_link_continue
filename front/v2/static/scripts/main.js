@@ -1,6 +1,7 @@
 document.getElementById("process-button").addEventListener("click", async () => {
     const resultsDiv = document.getElementById("results");
     const loadingDiv = document.getElementById("loading");
+    const userInput = document.getElementById("textInput").value.trim(); // Capture user input from textarea
 
     console.debug("DEBUG: Process button clicked");
 
@@ -18,14 +19,21 @@ document.getElementById("process-button").addEventListener("click", async () => 
         const jsonData = await response.json();
         console.debug("DEBUG: Successfully fetched JSON data:", jsonData);
 
-        const data = jsonData.data || {};
-        console.debug("DEBUG: Data to send to /process endpoint:", data);
+        const companies = jsonData.data || {};
+        console.debug("DEBUG: Companies data:", companies);
+
+        // Prepare data to send to /process endpoint
+        const payload = {
+            userInput, // Add the user input from the textarea
+            companies, // Include the companies data
+        };
+        console.debug("DEBUG: Data to send to /process endpoint:", payload);
 
         // Send the data to the /process endpoint
         const processResponse = await fetch("http://127.0.0.1:5000/process", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(data),
+            body: JSON.stringify(payload),
         });
         console.debug("DEBUG: Fetch request sent to /process endpoint");
 
