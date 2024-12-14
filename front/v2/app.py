@@ -69,6 +69,9 @@ def process_data():
         # Parse the incoming request data
         request_data = request.json
         user_input = request_data.get("userInput", "").strip()
+        app.logger.debug(f"DEBUG: Received user input: {user_input}")
+        if not user_input:
+            app.logger.warning("WARN: User input is empty. Ensure the frontend is sending the correct value.")
 
         # Load prompts and initialize the AI model
         app.logger.debug("DEBUG: Loading prompts and initializing AI model.")
@@ -85,17 +88,14 @@ def process_data():
                 try:
                     app.logger.debug(f"DEBUG: Processing company {index}/{total_companies}: {company_name}")
 
-                    # Prepare scraped data with user input
-                    scraped_data = f"""
-                    User Input: {user_input}
-                    Company Name: {company_name}
-                    Industry: {company_info.get('mainBusinessLine', 'N/A')}
-                    Website: {company_info.get('url', 'N/A')}
-                    """
-                    app.logger.debug(f"DEBUG: Prepared scraped data for {company_name}.")
+                    # Prepare scraped data (only company-specific information)
+                    scraped_data = json.dumps(company_info, indent=2)
+                    app.logger.debug(f"DEBUG: Prepared scraped data for {company_name}: {scraped_data}")
 
                     # Call process_company to get results
-                    analysis, sales_leads, probability_html, probability_value = process_company(scraped_data, gemini_model, prompts)
+                    analysis, sales_leads, probability_html, probability_value = process_company(
+                        scraped_data, user_input, gemini_model, prompts
+                    )
                     app.logger.debug(f"DEBUG: Successfully processed {company_name}.")
 
                     # Append results to the list

@@ -29,8 +29,11 @@ class GeminiModel:
         #        user_message["parts"].extend(img_objects)
 
         messages.append(user_message)
-
+        print(f"DEBUG: Sending system prompt: {system_prompt}")
+        print(f"DEBUG: Sending user prompt: {user_prompt}")
         response = self.model.generate_content(messages)
+        print(f"DEBUG: Answer {response.text}")
+
         return response.text
 
 

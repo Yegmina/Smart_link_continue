@@ -2,6 +2,13 @@ document.getElementById("process-button").addEventListener("click", async () => 
     const resultsDiv = document.getElementById("results");
     const loadingDiv = document.getElementById("loading");
     const userInput = document.getElementById("textInput").value.trim(); // Capture user input from textarea
+    if (!userInput) {
+    console.warn("WARN: User input is empty. Sending empty value to the server.");
+    }
+    console.debug("DEBUG: Captured user input:", userInput);
+
+
+
 
     console.debug("DEBUG: Process button clicked");
 

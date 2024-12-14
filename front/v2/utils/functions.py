@@ -57,8 +57,7 @@ def load_scraped_companies(file_path="data/scraped_companies.json"):
 
 import time
 import re
-
-def process_company(scraped_data, gemini_model, prompts):
+def process_company(scraped_data, user_input, gemini_model, prompts):
     def safe_api_call(system_prompt, user_prompt):
         """Safely call the Gemini model, handling quota exhaustion (429 errors)."""
         retries = 3  # Retry 3 times for 429 errors
@@ -82,12 +81,16 @@ def process_company(scraped_data, gemini_model, prompts):
 
     # Step 2: Generate sales leads
     leads_system = prompts['generate_leads']['system_prompt']
-    leads_user = prompts['generate_leads']['user_prompt'].replace("{{analysis}}", analysis)
+    leads_user = prompts['generate_leads']['user_prompt'] \
+        .replace("{{analysis}}", analysis) \
+        .replace("{{user_input}}", user_input)
     sales_leads = safe_api_call(leads_system, leads_user)
 
     # Step 3: Generate partnership probability
     probability_system = prompts['generate_probability']['system_prompt']
-    probability_user = prompts['generate_probability']['user_prompt'].replace("{{analysis}}", analysis).replace("{{user_input}}", scraped_data)
+    probability_user = prompts['generate_probability']['user_prompt'] \
+        .replace("{{analysis}}", analysis) \
+        .replace("{{user_input}}", user_input)
     partnership_probability = safe_api_call(probability_system, probability_user)
 
     # Extract numeric probability for sorting and display
@@ -130,4 +133,3 @@ def process_company(scraped_data, gemini_model, prompts):
     probability_html = f"<b>Partnership Probability:</b> {probability_value}%"
 
     return analysis_html, sales_leads_html, probability_html, probability_value
-
