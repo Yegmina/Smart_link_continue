@@ -4,7 +4,7 @@ import google.generativeai as genai
 
 
 class GeminiModel:
-    def __init__(self, model_name="gemini-1.5-flash"):
+    def __init__(self, model_name="gemini-2.0-flash-exp"):
         self.model_name = model_name
 
         # Hardcoded API Key

@@ -76,7 +76,7 @@ def process_data():
         # Load prompts and initialize the AI model
         app.logger.debug("DEBUG: Loading prompts and initializing AI model.")
         prompts = load_prompts()
-        gemini_model = GeminiModel(model_name="gemini-1.5-flash")
+        gemini_model = GeminiModel()
 
         results = []
         total_companies = len(request_data.get("companies", {}))
